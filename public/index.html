@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Share vs ACA Comparison — TMS Solutions Group</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FAFAF7;
+      --bg-card: #FFFFFF;
+      --gold: #B8860B;
+      --gold-muted: #9A7209;
+      --gold-dim: rgba(184,134,11,0.08);
+      --gold-border: rgba(184,134,11,0.22);
+      --dark: #1C1C1E;
+      --gray: #6B7280;
+      --gray-light: #9CA3AF;
+      --border: #E8E5DC;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --green: #15803D;
+      --green-bg: rgba(21,128,61,0.07);
+      --green-border: rgba(21,128,61,0.25);
+      --yellow: #B45309;
+      --yellow-bg: rgba(180,83,9,0.07);
+      --yellow-border: rgba(180,83,9,0.25);
+      --red: #B91C1C;
+      --red-bg: rgba(185,28,28,0.07);
+      --red-border: rgba(185,28,28,0.25);
+      --blue: #1D4ED8;
+      --blue-bg: rgba(29,78,216,0.07);
+      --blue-border: rgba(29,78,216,0.22);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--dark);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #app { min-height: 100vh; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate { animation: fadeUp 0.45s ease both; }
+
+    /* ========== SHARED ========== */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .tms-footer {
+      text-align: center;
+      padding: 32px 24px 24px;
+      color: var(--gray-light);
+      font-size: 12px;
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+    }
+    .tms-footer a { color: var(--gold); text-decoration: none; }
+
+    /* ========== LANDING ========== */
+    .landing {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 56px 24px 80px;
+      background: #FAFAF7;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .landing::before {
+      content: '';
+      position: absolute;
+      top: -8%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 600px;
+      background: radial-gradient(ellipse, rgba(184,134,11,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .landing-inner {
+      width: 100%;
+      max-width: 640px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tms-logo {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .tms-letters {
+      display: block;
+      font-size: 17px;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 7px;
+      line-height: 1;
+    }
+    .tms-sub {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gray);
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      margin-top: 5px;
+    }
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--gold-dim);
+      border: 1px solid var(--gold-border);
+      color: var(--gold-muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+
+    .landing-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 900;
+      color: var(--dark);
+      line-height: 1.15;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .landing-subtitle {
+      font-size: 15px;
+      color: var(--gray);
+      line-height: 1.65;
+      text-align: center;
+      margin-bottom: 28px;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .benefit-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 36px;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .benefit-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--dark);
+    }
+    .benefit-list .check {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--gold-dim);
+      border: 1.5px solid var(--gold-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    /* ---- Form Card ---- */
+    .form-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+
+    @media (max-width: 500px) {
+      .form-card { padding: 24px 18px; }
+    }
+
+    .form-section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+      margin-top: 24px;
+    }
+    .form-section-label:first-child { margin-top: 0; }
+
+    .field {
+      margin-bottom: 18px;
+    }
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 7px;
+    }
+    .field input, .field select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      color: var(--dark);
+      background: #fff;
+      outline: none;
+      transition: border-color 0.18s;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--gold);
+    }
+    .field .hint {
+      font-size: 11px;
+      color: var(--gray-light);
+      margin-top: 5px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 480px) {
+      .field-row { grid-template-columns: 1fr; }
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 10px;
+    }
+    .radio-option {
+      flex: 1;
+      position: relative;
+    }
+    .radio-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .radio-option label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray);
+      cursor: pointer;
+      transition: all 0.18s;
+      text-align: center;
+    }
+    .radio-option input[type="radio"]:checked + label {
+      border-color: var(--gold);
+      background: var(--gold-dim);
+      color: var(--gold-muted);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 15px 24px;
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.18s, transform 0.12s;
+      letter-spacing: 0.3px;
+    }
+    .btn-primary:hover { background: var(--gold-muted); transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .no-signup {
+      text-align: center;
+      font-size: 12px;
+      color: var(--gray-light);
+      margin-top: 14px;
+    }
+
+    /* ========== RESULTS ========== */
+    .results-page {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 48px 24px 60px;
+    }
+
+    .results-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .results-header .tms-logo { margin-bottom: 20px; }
+    .results-header h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 900;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+    .results-header .subtitle {
+      font-size: 14px;
+      color: var(--gray);
+    }
+
+    /* Alert Banners */
+    .alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 20px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .alert-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .alert strong { font-weight: 700; display: block; margin-bottom: 3px; }
+    .alert-warning {
+      background: var(--yellow-bg);
+      border: 1px solid var(--yellow-border);
+      color: #78350F;
+    }
+    .alert-danger {
+      background: var(--red-bg);
+      border: 1px solid var(--red-border);
+      color: #7F1D1D;
+    }
+    .alert-info {
+      background: var(--blue-bg);
+      border: 1px solid var(--blue-border);
+      color: #1E3A8A;
+    }
+
+    /* Comparison Table */
+    .section-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 20px;
+      margin-top: 40px;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 600px) {
+      .compare-grid { grid-template-columns: 1fr; }
+    }
+
+    .compare-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+    .compare-card.aca { border-top: 4px solid #1D4ED8; }
+    .compare-card.hs  { border-top: 4px solid var(--green); }
+
+    .compare-card .card-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .compare-card.aca .card-label { color: #1D4ED8; }
+    .compare-card.hs  .card-label { color: var(--green); }
+
+    .compare-card h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 20px;
+    }
+
+    .cost-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .cost-row:last-child { border-bottom: none; }
+    .cost-row .label { color: var(--gray); font-weight: 500; }
+    .cost-row .value { font-weight: 700; color: var(--dark); }
+    .cost-row .value.big {
+      font-size: 20px;
+      color: var(--dark);
+    }
+    .cost-row .value.savings { color: var(--green); }
+    .cost-row .value.higher  { color: var(--red); }
+
+    .note-text {
+      font-size: 11px;
+      color: var(--gray-light);
+      margin-top: 14px;
+      line-height: 1.6;
+    }
+
+    /* Savings Banner */
+    .savings-banner {
+      background: linear-gradient(135deg, #F0FDF4, #DCFCE7);
+      border: 1.5px solid var(--green-border);
+      border-radius: 16px;
+      padding: 28px 32px;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .savings-banner.neutral {
+      background: linear-gradient(135deg, #FFF7ED, #FFEDD5);
+      border-color: var(--yellow-border);
+    }
+    .savings-banner .banner-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .savings-banner.green .banner-label { color: var(--green); }
+    .savings-banner.neutral .banner-label { color: var(--yellow); }
+    .savings-banner .banner-amount {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(32px, 6vw, 52px);
+      font-weight: 900;
+      color: var(--green);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .savings-banner.neutral .banner-amount { color: var(--yellow); }
+    .savings-banner .banner-sub {
+      font-size: 14px;
+      color: var(--gray);
+    }
+
+    /* Key Differences */
+    .diff-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .diff-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+    }
+    .diff-card .diff-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gray-light);
+      margin-bottom: 8px;
+    }
+    .diff-card .diff-aca {
+      font-size: 13px;
+      color: #1D4ED8;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .diff-card .diff-hs {
+      font-size: 13px;
+      color: var(--green);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .diff-card .diff-note {
+      font-size: 11px;
+      color: var(--gray-light);
+      line-height: 1.5;
+    }
+
+    /* Scenarios */
+    .scenarios-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    @media (max-width: 620px) {
+      .scenarios-grid { grid-template-columns: 1fr; }
+    }
+
+    .scenario-col h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
+    }
+    .scenario-col.hs-wins h3 { color: var(--green); border-color: var(--green-border); }
+    .scenario-col.aca-wins h3 { color: #1D4ED8; border-color: var(--blue-border); }
+
+    .scenario-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 14px;
+      align-items: flex-start;
+    }
+    .scenario-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .hs-wins .scenario-num { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .aca-wins .scenario-num { background: var(--blue-bg); color: #1D4ED8; border: 1px solid var(--blue-border); }
+
+    .scenario-text strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 3px;
+    }
+    .scenario-text p {
+      font-size: 12px;
+      color: var(--gray);
+      line-height: 1.5;
+    }
+
+    /* Disclaimer */
+    .disclaimer {
+      background: #F9F6EE;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-top: 40px;
+    }
+    .disclaimer h4 {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 8px;
+    }
+    .disclaimer p {
+      font-size: 12px;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+
+    /* Action Buttons */
+    .action-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 36px;
+      flex-wrap: wrap;
+    }
+    .btn-pdf {
+      flex: 1;
+      min-width: 180px;
+      padding: 14px 24px;
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background 0.18s;
+      text-align: center;
+    }
+    .btn-pdf:hover { background: var(--gold-muted); }
+
+    .btn-retake {
+      flex: 1;
+      min-width: 140px;
+      padding: 14px 24px;
+      background: transparent;
+      color: var(--gray);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.18s;
+      text-align: center;
+    }
+    .btn-retake:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* CTA Box */
+    .cta-box {
+      background: #fff;
+      border: 1.5px solid var(--gold-border);
+      border-radius: 16px;
+      padding: 28px 28px;
+      margin-top: 32px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .cta-box-text h4 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+    .cta-box-text p {
+      font-size: 13px;
+      color: var(--gray);
+      line-height: 1.5;
+    }
+    .cta-box-btn {
+      flex-shrink: 0;
+      padding: 12px 22px;
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.18s;
+    }
+    .cta-box-btn:hover { background: var(--gold-muted); }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ========== LANDING PAGE ========== -->
+  <div id="page-landing" class="page active">
+    <div class="landing">
+      <div class="landing-inner animate">
+
+        <div class="tms-logo">
+          <span class="tms-letters">TMS</span>
+          <span class="tms-sub">Solutions Group</span>
+        </div>
+
+        <div style="text-align:center; margin-bottom: 20px;">
+          <span class="pill-badge">&#9679; Free Calculator Tool</span>
+        </div>
+
+        <h1 class="landing-title">Health Share vs ACA<br>Insurance Comparison</h1>
+        <p class="landing-subtitle">Enter your current plan details to see a side-by-side cost comparison between traditional ACA insurance and health share programs — instantly, with no sign-up required.</p>
+
+        <ul class="benefit-list">
+          <li><span class="check">&#10003;</span> Estimated monthly &amp; annual cost difference</li>
+          <li><span class="check">&#10003;</span> Top 3 scenarios where each option wins</li>
+          <li><span class="check">&#10003;</span> Subsidy &amp; pre-existing condition flags</li>
+        </ul>
+
+        <div class="form-card">
+
+          <div class="form-section-label">Your Business (Optional)</div>
+          <div class="field">
+            <label for="businessName">Business Name</label>
+            <input type="text" id="businessName" placeholder="e.g. Acme Landscaping">
+          </div>
+
+          <div class="form-section-label">Current Plan Details</div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="numEmployees">Number of Employees</label>
+              <input type="number" id="numEmployees" min="1" max="500" placeholder="e.g. 12">
+            </div>
+            <div class="field">
+              <label for="monthlyPremium">Monthly Premium / Person</label>
+              <input type="number" id="monthlyPremium" min="0" placeholder="e.g. 450" step="1">
+              <div class="hint">Employer + employee share combined</div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="deductible">Annual Deductible / Person</label>
+              <input type="number" id="deductible" min="0" placeholder="e.g. 3000" step="100">
+            </div>
+            <div class="field">
+              <label>Plan Type</label>
+              <div class="radio-group">
+                <div class="radio-option">
+                  <input type="radio" name="planType" id="planIndividual" value="individual" checked>
+                  <label for="planIndividual">Individual</label>
+                </div>
+                <div class="radio-option">
+                  <input type="radio" name="planType" id="planFamily" value="family">
+                  <label for="planFamily">Family</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section-label">Additional Factors</div>
+
+          <div class="field">
+            <label>Do any employees currently receive ACA subsidies?</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" name="subsidies" id="subsidiesNo" value="no" checked>
+                <label for="subsidiesNo">No</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" name="subsidies" id="subsidiesYes" value="yes">
+                <label for="subsidiesYes">Yes</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" name="subsidies" id="subsidiesUnsure" value="unsure">
+                <label for="subsidiesUnsure">Not Sure</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Do any employees have pre-existing conditions?</label>
+            <div class="radio-group">
+              <div class="radio-option">
+                <input type="radio" name="preExisting" id="preExNo" value="no" checked>
+                <label for="preExNo">No</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" name="preExisting" id="preExYes" value="yes">
+                <label for="preExYes">Yes</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" name="preExisting" id="preExUnsure" value="unsure">
+                <label for="preExUnsure">Not Sure</label>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-primary" onclick="calculate()">Compare My Options &rarr;</button>
+          <div class="no-signup">No sign-up required. Results shown instantly.</div>
+        </div>
+
+      </div>
+    </div>
+    <div class="tms-footer">
+      <a href="mailto:tom@tms-solutions-group.com">tom@tms-solutions-group.com</a> &nbsp;&middot;&nbsp;
+      tms-solutions-group.com &nbsp;&middot;&nbsp; 386-387-8620
+    </div>
+  </div>
+
+  <!-- ========== RESULTS PAGE ========== -->
+  <div id="page-results" class="page">
+    <div class="results-page">
+
+      <div class="results-header animate">
+        <div class="tms-logo">
+          <span class="tms-letters">TMS</span>
+          <span class="tms-sub">Solutions Group</span>
+        </div>
+        <h1>Insurance Comparison Results</h1>
+        <div class="subtitle" id="resultsSubtitle"></div>
+      </div>
+
+      <!-- Alerts -->
+      <div id="alertsContainer"></div>
+
+      <!-- Savings Banner -->
+      <div id="savingsBanner"></div>
+
+      <!-- Side by Side Comparison -->
+      <div class="section-title">Side-by-Side Cost Comparison</div>
+      <div class="compare-grid">
+        <div class="compare-card aca">
+          <div class="card-label">Current Plan</div>
+          <h3>ACA / Traditional Insurance</h3>
+          <div id="acaCosts"></div>
+          <div class="note-text">Based on your inputs. Premiums represent total cost per plan unit.</div>
+        </div>
+        <div class="compare-card hs">
+          <div class="card-label">Alternative Option</div>
+          <h3>Health Share Program</h3>
+          <div id="hsCosts"></div>
+          <div class="note-text">Estimates based on major health share ministries (Liberty HealthShare, Sedera, Knew Health). Actual rates vary by program and member profile.</div>
+        </div>
+      </div>
+
+      <!-- Key Structural Differences -->
+      <div class="section-title">Key Structural Differences</div>
+      <div class="diff-grid" id="diffGrid"></div>
+
+      <!-- Scenario Analysis -->
+      <div class="section-title">When Each Option Tends to Win</div>
+      <div class="scenarios-grid">
+        <div class="scenario-col hs-wins">
+          <h3>&#10003; Health Share Advantages</h3>
+          <div id="hsScenarios"></div>
+        </div>
+        <div class="scenario-col aca-wins">
+          <h3>&#10003; ACA Advantages</h3>
+          <div id="acaScenarios"></div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-box">
+        <div class="cta-box-text">
+          <h4>Want a Personalized Analysis?</h4>
+          <p>TMS Solutions Group can review your specific workforce, carrier options, and budget to help you make a fully informed decision.</p>
+        </div>
+        <a href="mailto:tom@tms-solutions-group.com?subject=Insurance%20Comparison%20Consultation" class="cta-box-btn">Schedule a Call</a>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-row">
+        <button class="btn-pdf" onclick="generatePDF()">&#8595; Download PDF Summary</button>
+        <button class="btn-retake" onclick="goBack()">&#8592; Run New Comparison</button>
+      </div>
+
+      <!-- Disclaimer -->
+      <div class="disclaimer">
+        <h4>Important Disclaimer</h4>
+        <p>This tool is for <strong>informational and educational purposes only</strong> and does not constitute insurance, financial, legal, or medical advice. Health share programs are not insurance and do not guarantee payment of medical expenses. ACA cost estimates are based on user-provided data. Health share cost estimates are based on publicly available program averages and may not reflect your actual quoted rates. Results may vary significantly based on individual circumstances, geographic location, health status, selected program, and current market conditions. <strong>Consult a licensed insurance advisor, benefits broker, or financial professional</strong> before making any coverage decisions for yourself or your employees.</p>
+      </div>
+
+    </div>
+    <div class="tms-footer">
+      <a href="mailto:tom@tms-solutions-group.com">tom@tms-solutions-group.com</a> &nbsp;&middot;&nbsp;
+      tms-solutions-group.com &nbsp;&middot;&nbsp; 386-387-8620
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ============================================================
+  //  HEALTH SHARE RATE ESTIMATES (2024/2025 averages)
+  //  Based on Liberty HealthShare, Sedera, Knew Health, Zion
+  // ============================================================
+  const HS_RATES = {
+    individual: { low: 199, mid: 249, high: 299 },
+    family:     { low: 449, mid: 549, high: 649 }
+  };
+  const HS_IUA = { low: 500, mid: 1000, high: 2500 }; // Initial Unshareable Amount (per incident)
+
+  function fmt(n) {
+    return '$' + Math.round(n).toLocaleString('en-US');
+  }
+
+  function calculate() {
+    const employees   = parseInt(document.getElementById('numEmployees').value) || 0;
+    const premium     = parseFloat(document.getElementById('monthlyPremium').value) || 0;
+    const deductible  = parseFloat(document.getElementById('deductible').value) || 0;
+    const planType    = document.querySelector('input[name="planType"]:checked').value;
+    const subsidies   = document.querySelector('input[name="subsidies"]:checked').value;
+    const preExisting = document.querySelector('input[name="preExisting"]:checked').value;
+    const bizName     = document.getElementById('businessName').value.trim();
+
+    if (!employees || !premium) {
+      alert('Please enter at least the number of employees and monthly premium to continue.');
+      return;
+    }
+
+    // ACA calculations
+    const acaMonthly = employees * premium;
+    const acaAnnual  = acaMonthly * 12;
+    const acaTotalDeductibleExposure = employees * deductible;
+
+    // Health Share calculations (low / mid estimate)
+    const hsRates = HS_RATES[planType];
+    const hsMonthlyLow  = employees * hsRates.low;
+    const hsMonthlyMid  = employees * hsRates.mid;
+    const hsAnnualLow   = hsMonthlyLow * 12;
+    const hsAnnualMid   = hsMonthlyMid * 12;
+
+    // Savings (vs ACA) using mid estimate
+    const savingsMonthly = acaMonthly - hsMonthlyMid;
+    const savingsAnnual  = acaAnnual  - hsAnnualMid;
+    const savingsPct     = acaAnnual > 0 ? Math.round((savingsAnnual / acaAnnual) * 100) : 0;
+
+    // Comparison data to pass to PDF
+    window._calcData = {
+      employees, premium, deductible, planType, subsidies, preExisting, bizName,
+      acaMonthly, acaAnnual, acaTotalDeductibleExposure,
+      hsMonthlyLow, hsMonthlyMid, hsAnnualLow, hsAnnualMid,
+      savingsMonthly, savingsAnnual, savingsPct,
+      hsRates, date: new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'})
+    };
+
+    renderResults(window._calcData);
+
+    document.getElementById('page-landing').classList.remove('active');
+    document.getElementById('page-results').classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function renderResults(d) {
+    // Subtitle
+    document.getElementById('resultsSubtitle').textContent =
+      (d.bizName ? d.bizName + ' — ' : '') + d.employees + ' employee' + (d.employees !== 1 ? 's' : '') +
+      ' · ' + (d.planType === 'family' ? 'Family' : 'Individual') + ' Plans · ' + d.date;
+
+    // ---- Alerts ----
+    let alertsHTML = '';
+    if (d.subsidies === 'yes') {
+      alertsHTML += `<div class="alert alert-warning animate">
+        <span class="alert-icon">&#9888;</span>
+        <div><strong>ACA Subsidy Flag</strong>Employees currently receiving ACA premium tax credits (subsidies) may find that health share programs offer little to no financial advantage. Subsidized ACA coverage can reduce effective premiums dramatically — sometimes to near $0/month. Evaluate carefully if subsidies are in play.</div>
+      </div>`;
+    } else if (d.subsidies === 'unsure') {
+      alertsHTML += `<div class="alert alert-info animate">
+        <span class="alert-icon">&#8505;</span>
+        <div><strong>Subsidy Eligibility Unknown</strong>It's worth checking whether any employees qualify for ACA premium tax credits. Subsidized plans can be very competitive on price and may outperform health share options.</div>
+      </div>`;
+    }
+    if (d.preExisting === 'yes') {
+      alertsHTML += `<div class="alert alert-danger animate">
+        <span class="alert-icon">&#9888;</span>
+        <div><strong>Pre-Existing Condition Warning</strong>Health share programs are <strong>not required by law to cover pre-existing conditions</strong>. Most programs exclude conditions diagnosed or treated within 1–3 years prior to membership, sometimes permanently. Employees with ongoing medical needs (diabetes, cancer, heart disease, etc.) may face denied sharing requests. ACA plans are legally required to cover all pre-existing conditions with no waiting periods. This is a critical distinction for your workforce.</div>
+      </div>`;
+    } else if (d.preExisting === 'unsure') {
+      alertsHTML += `<div class="alert alert-warning animate">
+        <span class="alert-icon">&#9888;</span>
+        <div><strong>Pre-Existing Condition Status Unknown</strong>Before transitioning to a health share program, survey employees about ongoing medical conditions. Health share exclusions for pre-existing conditions can create significant financial exposure for affected employees.</div>
+      </div>`;
+    }
+    document.getElementById('alertsContainer').innerHTML = alertsHTML;
+
+    // ---- Savings Banner ----
+    const isPositiveSavings = d.savingsAnnual > 0;
+    document.getElementById('savingsBanner').innerHTML = `
+      <div class="savings-banner ${isPositiveSavings ? 'green' : 'neutral'} animate">
+        <div class="banner-label">${isPositiveSavings ? 'Estimated Potential Annual Savings' : 'Estimated Annual Cost Difference'}</div>
+        <div class="banner-amount">${isPositiveSavings ? fmt(d.savingsAnnual) : '(' + fmt(Math.abs(d.savingsAnnual)) + ')'}</div>
+        <div class="banner-sub">
+          ${isPositiveSavings
+            ? `Health share could save approximately ${fmt(d.savingsMonthly)}/month (${d.savingsPct}% vs current ACA cost) — mid-range estimate`
+            : `At these premium levels, health share mid-range estimate is higher. Comparison based on ${d.employees} employee${d.employees !== 1 ? 's' : ''}.`
+          }
+        </div>
+      </div>`;
+
+    // ---- ACA Costs ----
+    document.getElementById('acaCosts').innerHTML = `
+      <div class="cost-row"><span class="label">Monthly Premium / Person</span><span class="value">${fmt(d.premium)}</span></div>
+      <div class="cost-row"><span class="label">Monthly Total (${d.employees} employees)</span><span class="value big">${fmt(d.acaMonthly)}</span></div>
+      <div class="cost-row"><span class="label">Annual Total</span><span class="value">${fmt(d.acaAnnual)}</span></div>
+      <div class="cost-row"><span class="label">Annual Deductible / Person</span><span class="value">${fmt(d.deductible)}</span></div>
+      <div class="cost-row"><span class="label">Max Deductible Exposure</span><span class="value">${fmt(d.acaTotalDeductibleExposure)}</span></div>
+      <div class="cost-row"><span class="label">Pre-existing Conditions</span><span class="value">Fully Covered</span></div>
+      <div class="cost-row"><span class="label">ACA Compliant</span><span class="value">&#10003; Yes</span></div>`;
+
+    // ---- HS Costs ----
+    document.getElementById('hsCosts').innerHTML = `
+      <div class="cost-row"><span class="label">Est. Monthly Contribution / Person</span><span class="value">${fmt(d.hsRates.low)}–${fmt(d.hsRates.high)}</span></div>
+      <div class="cost-row"><span class="label">Monthly Total (mid estimate)</span><span class="value big ${d.hsMonthlyMid < d.acaMonthly ? 'savings' : 'higher'}">${fmt(d.hsMonthlyMid)}</span></div>
+      <div class="cost-row"><span class="label">Annual Total (mid estimate)</span><span class="value ${d.hsAnnualMid < d.acaAnnual ? 'savings' : 'higher'}">${fmt(d.hsAnnualMid)}</span></div>
+      <div class="cost-row"><span class="label">Initial Unshareable Amount (IUA)</span><span class="value">$500–$2,500 / incident</span></div>
+      <div class="cost-row"><span class="label">Annual IUA Exposure (all employees)</span><span class="value">${fmt(d.employees * 1000)}</span></div>
+      <div class="cost-row"><span class="label">Pre-existing Conditions</span><span class="value higher">Often Excluded</span></div>
+      <div class="cost-row"><span class="label">ACA Compliant</span><span class="value higher">&#10005; No</span></div>`;
+
+    // ---- Key Differences ----
+    document.getElementById('diffGrid').innerHTML = `
+      <div class="diff-card">
+        <div class="diff-label">Deductible Structure</div>
+        <div class="diff-aca">ACA: Annual accumulating deductible (${fmt(d.deductible)}/yr)</div>
+        <div class="diff-hs">Health Share: Per-incident IUA ($500–$2,500)</div>
+        <div class="diff-note">Health share's per-incident IUA means multiple incidents in a year each reset your cost-sharing responsibility.</div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-label">Network Access</div>
+        <div class="diff-aca">ACA: In-network + out-of-network coverage tiers</div>
+        <div class="diff-hs">Health Share: Any provider (negotiated discounts vary)</div>
+        <div class="diff-note">Health share members can see any provider, but cost-sharing decisions are made by the ministry, not guaranteed by law.</div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-label">Legal Protection</div>
+        <div class="diff-aca">ACA: Federally regulated, guaranteed coverage</div>
+        <div class="diff-hs">Health Share: Not insurance, not ERISA regulated</div>
+        <div class="diff-note">Health share programs are voluntary membership organizations. They are not legally required to pay claims.</div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-label">Preventive Care</div>
+        <div class="diff-aca">ACA: Free preventive care (no cost-sharing)</div>
+        <div class="diff-hs">Health Share: Varies by program; often excluded</div>
+        <div class="diff-note">ACA plans must cover a set list of preventive services at no cost. Health share programs handle preventive care differently.</div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-label">Employer Tax Treatment</div>
+        <div class="diff-aca">ACA: Premiums generally tax-deductible</div>
+        <div class="diff-hs">Health Share: Contributions may not qualify — consult a CPA</div>
+        <div class="diff-note">Tax treatment of health share contributions is unsettled and varies by structure (HRA, ICHRA, etc.).</div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-label">Eligibility Requirements</div>
+        <div class="diff-aca">ACA: Anyone may enroll during open enrollment</div>
+        <div class="diff-hs">Health Share: Typically requires healthy lifestyle &amp; beliefs</div>
+        <div class="diff-note">Most health share ministries require members to adhere to a statement of faith and healthy-lifestyle guidelines (no tobacco, limited alcohol, etc.).</div>
+      </div>`;
+
+    // ---- HS Scenarios ----
+    document.getElementById('hsScenarios').innerHTML = `
+      <div class="scenario-item">
+        <div class="scenario-num">1</div>
+        <div class="scenario-text">
+          <strong>Healthy, Low-Utilization Workforce</strong>
+          <p>Teams with generally healthy employees who rarely need medical care benefit most from health share's lower monthly contributions — you pay less and use less.</p>
+        </div>
+      </div>
+      <div class="scenario-item">
+        <div class="scenario-num">2</div>
+        <div class="scenario-text">
+          <strong>High ACA Premiums, No Subsidies</strong>
+          <p>When your current ACA premium exceeds $350–$400+/person/month with no subsidy support, health share's average $199–$299/person/month can generate meaningful monthly savings.</p>
+        </div>
+      </div>
+      <div class="scenario-item">
+        <div class="scenario-num">3</div>
+        <div class="scenario-text">
+          <strong>Employer Supplement Strategy</strong>
+          <p>Some employers pair health share with a direct primary care (DPC) membership for routine visits, creating a comprehensive low-cost alternative stack for qualified teams.</p>
+        </div>
+      </div>`;
+
+    // ---- ACA Scenarios ----
+    document.getElementById('acaScenarios').innerHTML = `
+      <div class="scenario-item">
+        <div class="scenario-num">1</div>
+        <div class="scenario-text">
+          <strong>Employees With Pre-Existing Conditions</strong>
+          <p>ACA is legally required to cover all pre-existing conditions with no waiting periods or exclusions. Health share is not. This is often the decisive factor.</p>
+        </div>
+      </div>
+      <div class="scenario-item">
+        <div class="scenario-num">2</div>
+        <div class="scenario-text">
+          <strong>Employees Receiving Premium Subsidies</strong>
+          <p>If employees qualify for ACA tax credits, their effective premium can drop to near $0/month — far below what any health share program can offer.</p>
+        </div>
+      </div>
+      <div class="scenario-item">
+        <div class="scenario-num">3</div>
+        <div class="scenario-text">
+          <strong>High-Utilization or Complex Medical Needs</strong>
+          <p>Employees with frequent specialist visits, chronic conditions, mental health needs, or prescription costs benefit from ACA's structured out-of-pocket maximums and mandated coverage categories.</p>
+        </div>
+      </div>`;
+  }
+
+  function goBack() {
+    document.getElementById('page-results').classList.remove('active');
+    document.getElementById('page-landing').classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  // ============================================================
+  //  PDF GENERATION
+  // ============================================================
+  function generatePDF() {
+    const d = window._calcData;
+    if (!d) return;
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
+    const W = 612, H = 792;
+    const GOLD = [184, 134, 11];
+    const DARK = [28, 28, 30];
+    const GRAY = [107, 114, 128];
+    const CREAM = [250, 250, 247];
+    const GREEN_C = [21, 128, 61];
+    const BLUE_C  = [29, 78, 216];
+    const RED_C   = [185, 28, 28];
+    const AMBER_C = [180, 83, 9];
+    const BORDER  = [232, 229, 220];
+
+    // ---- PAGE 1: COVER / SUMMARY ----
+    doc.setFillColor(...CREAM);
+    doc.rect(0, 0, W, H, 'F');
+
+    // Gold top bar
+    doc.setFillColor(...GOLD);
+    doc.rect(0, 0, W, 6, 'F');
+
+    // TMS Logo
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.setTextColor(...GOLD);
+    doc.setCharSpace(5);
+    doc.text('TMS', 306, 52, { align: 'center' });
+    doc.setCharSpace(0);
+    doc.setFontSize(8);
+    doc.setTextColor(...GRAY);
+    doc.text('SOLUTIONS GROUP', 306, 64, { align: 'center' });
+
+    // Title
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(26);
+    doc.setTextColor(...DARK);
+    doc.text('Health Share vs ACA', 306, 102, { align: 'center' });
+    doc.text('Insurance Comparison', 306, 130, { align: 'center' });
+
+    // Subtitle
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(...GRAY);
+    const subText = (d.bizName ? d.bizName + '  ·  ' : '') + d.employees + ' Employee' + (d.employees !== 1 ? 's' : '') + '  ·  ' + (d.planType === 'family' ? 'Family' : 'Individual') + ' Plans  ·  ' + d.date;
+    doc.text(subText, 306, 148, { align: 'center' });
+
+    // Divider
+    doc.setDrawColor(...BORDER);
+    doc.setLineWidth(1);
+    doc.line(60, 162, 552, 162);
+
+    // Alert boxes (if applicable)
+    let alertY = 175;
+    if (d.subsidies === 'yes') {
+      doc.setFillColor(255, 251, 235);
+      doc.roundedRect(60, alertY, 492, 38, 4, 4, 'F');
+      doc.setDrawColor(217, 119, 6);
+      doc.setLineWidth(0.5);
+      doc.roundedRect(60, alertY, 492, 38, 4, 4, 'S');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.setTextColor(120, 53, 15);
+      doc.text('⚠ ACA Subsidy Flag:', 72, alertY + 13);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Subsidized ACA premiums may be lower than health share costs. Evaluate carefully.', 72, alertY + 26);
+      alertY += 48;
+    }
+    if (d.preExisting === 'yes') {
+      doc.setFillColor(254, 242, 242);
+      doc.roundedRect(60, alertY, 492, 46, 4, 4, 'F');
+      doc.setDrawColor(...RED_C);
+      doc.setLineWidth(0.5);
+      doc.roundedRect(60, alertY, 492, 46, 4, 4, 'S');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.setTextColor(...RED_C);
+      doc.text('⚠ Pre-Existing Condition Warning:', 72, alertY + 13);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(127, 29, 29);
+      doc.text('Health share programs are NOT required to cover pre-existing conditions. Employees', 72, alertY + 26);
+      doc.text('with ongoing medical needs may face denied sharing requests. ACA covers all conditions.', 72, alertY + 39);
+      alertY += 56;
+    }
+
+    // Savings Banner
+    alertY += 6;
+    const bannerColor = d.savingsAnnual > 0 ? [240, 253, 244] : [255, 247, 237];
+    const bannerBorder = d.savingsAnnual > 0 ? [134, 239, 172] : [253, 186, 116];
+    doc.setFillColor(...bannerColor);
+    doc.roundedRect(60, alertY, 492, 64, 8, 8, 'F');
+    doc.setDrawColor(...bannerBorder);
+    doc.setLineWidth(1);
+    doc.roundedRect(60, alertY, 492, 64, 8, 8, 'S');
+
+    const bannerTextColor = d.savingsAnnual > 0 ? GREEN_C : AMBER_C;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(...bannerTextColor);
+    doc.setCharSpace(2);
+    doc.text(d.savingsAnnual > 0 ? 'ESTIMATED ANNUAL SAVINGS' : 'ESTIMATED COST DIFFERENCE', 306, alertY + 16, { align: 'center' });
+    doc.setCharSpace(0);
+
+    doc.setFontSize(28);
+    const savingsStr = d.savingsAnnual > 0
+      ? '$' + Math.round(d.savingsAnnual).toLocaleString()
+      : '(' + '$' + Math.round(Math.abs(d.savingsAnnual)).toLocaleString() + ')';
+    doc.text(savingsStr, 306, alertY + 42, { align: 'center' });
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...GRAY);
+    doc.text(
+      d.savingsAnnual > 0
+        ? 'Health share mid-range estimate vs current ACA — ' + Math.round(d.savingsPct) + '% potential savings'
+        : 'Health share mid-range estimate is higher than current ACA at these premium levels',
+      306, alertY + 56, { align: 'center' }
+    );
+
+    // Side-by-Side Table
+    const tableY = alertY + 82;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor(...DARK);
+    doc.text('Side-by-Side Cost Comparison', 60, tableY);
+
+    const col1X = 60, col2X = 310;
+    const colW = 234;
+    let rowY = tableY + 18;
+
+    function drawCompareCol(x, label, color, rows) {
+      // Header
+      doc.setFillColor(...color);
+      doc.rect(x, rowY, colW, 5, 'F');
+      doc.setFillColor(255, 255, 255);
+      doc.rect(x, rowY + 5, colW, 28, 'F');
+      doc.setDrawColor(...BORDER);
+      doc.setLineWidth(0.5);
+      doc.rect(x, rowY, colW, 33, 'S');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7.5);
+      doc.setTextColor(...color);
+      doc.setCharSpace(1.5);
+      doc.text(label.toUpperCase(), x + 10, rowY + 15);
+      doc.setCharSpace(0);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(...DARK);
+      // Name
+      let nameY = rowY + 33;
+      rows.forEach((row, i) => {
+        const bg = i % 2 === 0 ? [252, 252, 250] : [255, 255, 255];
+        doc.setFillColor(...bg);
+        doc.rect(x, nameY, colW, 22, 'F');
+        doc.setDrawColor(...BORDER);
+        doc.setLineWidth(0.3);
+        doc.rect(x, nameY, colW, 22, 'S');
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.setTextColor(...GRAY);
+        doc.text(row.label, x + 8, nameY + 14);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(row.color ? row.color : DARK);
+        doc.text(row.value, x + colW - 8, nameY + 14, { align: 'right' });
+        nameY += 22;
+      });
+    }
+
+    const acaRows = [
+      { label: 'Monthly Premium / Person', value: '$' + Math.round(d.premium).toLocaleString() },
+      { label: 'Monthly Total (' + d.employees + ' employees)', value: '$' + Math.round(d.acaMonthly).toLocaleString() },
+      { label: 'Annual Total', value: '$' + Math.round(d.acaAnnual).toLocaleString() },
+      { label: 'Annual Deductible / Person', value: '$' + Math.round(d.deductible).toLocaleString() },
+      { label: 'Pre-existing Conditions', value: 'Fully Covered', color: GREEN_C },
+      { label: 'ACA Compliant', value: 'Yes', color: GREEN_C },
+    ];
+    const hsRows = [
+      { label: 'Est. Monthly Contrib / Person', value: '$' + d.hsRates.low + '–$' + d.hsRates.high },
+      { label: 'Monthly Total (mid estimate)', value: '$' + Math.round(d.hsMonthlyMid).toLocaleString(), color: d.hsMonthlyMid < d.acaMonthly ? GREEN_C : RED_C },
+      { label: 'Annual Total (mid estimate)', value: '$' + Math.round(d.hsAnnualMid).toLocaleString(), color: d.hsAnnualMid < d.acaAnnual ? GREEN_C : RED_C },
+      { label: 'IUA (per incident)', value: '$500–$2,500' },
+      { label: 'Pre-existing Conditions', value: 'Often Excluded', color: RED_C },
+      { label: 'ACA Compliant', value: 'No', color: RED_C },
+    ];
+
+    drawCompareCol(col1X, 'ACA / Traditional Insurance', BLUE_C, acaRows);
+    drawCompareCol(col2X, 'Health Share Program', GREEN_C, hsRows);
+
+    // Footer
+    doc.setFillColor(...GOLD);
+    doc.rect(0, H - 28, W, 1, 'F');
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...GRAY);
+    doc.text('tom@tms-solutions-group.com  ·  tms-solutions-group.com  ·  386-387-8620', 306, H - 12, { align: 'center' });
+
+    // ---- PAGE 2: DETAILED BREAKDOWN ----
+    doc.addPage();
+    doc.setFillColor(...CREAM);
+    doc.rect(0, 0, W, H, 'F');
+    doc.setFillColor(...GOLD);
+    doc.rect(0, 0, W, 6, 'F');
+
+    let p2Y = 40;
+
+    // Scenarios
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.setTextColor(...DARK);
+    doc.text('When Each Option Tends to Win', 60, p2Y);
+    p2Y += 18;
+
+    const hsScenList = [
+      ['Healthy, Low-Utilization Workforce', 'Teams with generally healthy employees who rarely need care benefit most from health share\'s lower monthly contributions.'],
+      ['High ACA Premiums, No Subsidies', 'When ACA premiums exceed $350–$400+/person with no subsidy support, health share\'s $199–$299/person average can generate meaningful savings.'],
+      ['Employer Supplement Strategy', 'Some employers pair health share with direct primary care (DPC) memberships for routine visits, creating a low-cost alternative for qualified teams.'],
+    ];
+    const acaScenList = [
+      ['Employees With Pre-Existing Conditions', 'ACA is legally required to cover all pre-existing conditions with no waiting periods. Health share is not — often the decisive factor.'],
+      ['Employees Receiving Premium Subsidies', 'ACA tax credits can reduce effective premiums to near $0/month — far below what any health share program can offer.'],
+      ['High-Utilization or Complex Medical Needs', 'Employees with chronic conditions, frequent specialist visits, or prescription needs benefit from ACA\'s structured out-of-pocket maximums.'],
+    ];
+
+    function drawScenarioCol(x, colW2, color, title, items) {
+      doc.setFillColor(...color.map(c => Math.min(255, c + 200)));
+      doc.roundedRect(x, p2Y, colW2, 16, 4, 4, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.setTextColor(...color);
+      doc.text(title, x + 10, p2Y + 11);
+      let itemY = p2Y + 24;
+      items.forEach((item, i) => {
+        doc.setFillColor(255, 255, 255);
+        doc.roundedRect(x, itemY, colW2, 52, 4, 4, 'F');
+        doc.setDrawColor(...BORDER);
+        doc.setLineWidth(0.5);
+        doc.roundedRect(x, itemY, colW2, 52, 4, 4, 'S');
+
+        // Number badge
+        doc.setFillColor(...color.map(c => Math.min(255, c + 200)));
+        doc.circle(x + 14, itemY + 12, 9, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(...color);
+        doc.text(String(i + 1), x + 14, itemY + 15.5, { align: 'center' });
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(...DARK);
+        doc.text(item[0], x + 28, itemY + 14);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(...GRAY);
+        const lines = doc.splitTextToSize(item[1], colW2 - 34);
+        doc.text(lines, x + 28, itemY + 26);
+
+        itemY += 58;
+      });
+      return itemY;
+    }
+
+    const sc1End = drawScenarioCol(60, 230, GREEN_C, '✓ Health Share Advantages', hsScenList);
+    const sc2End = drawScenarioCol(302, 250, BLUE_C, '✓ ACA Advantages', acaScenList);
+    p2Y = Math.max(sc1End, sc2End) + 16;
+
+    // Key Structural Differences
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor(...DARK);
+    doc.text('Key Structural Differences', 60, p2Y);
+    p2Y += 14;
+
+    const diffs = [
+      ['Deductible Structure', 'ACA: Annual accumulating deductible (' + '$' + Math.round(d.deductible).toLocaleString() + '/yr)', 'HS: Per-incident IUA ($500–$2,500 each incident)'],
+      ['Legal Protection', 'ACA: Federally regulated, guaranteed coverage', 'HS: Not insurance — not required to pay claims by law'],
+      ['Network Access', 'ACA: In/out-of-network tiers with known cost sharing', 'HS: Any provider, but sharing decisions made by the ministry'],
+    ];
+
+    diffs.forEach(diff => {
+      if (p2Y > H - 100) return;
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(60, p2Y, 492, 38, 4, 4, 'F');
+      doc.setDrawColor(...BORDER);
+      doc.setLineWidth(0.5);
+      doc.roundedRect(60, p2Y, 492, 38, 4, 4, 'S');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(...DARK);
+      doc.text(diff[0], 72, p2Y + 13);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(BLUE_C[0], BLUE_C[1], BLUE_C[2]);
+      doc.text(diff[1], 72, p2Y + 25);
+      doc.setTextColor(GREEN_C[0], GREEN_C[1], GREEN_C[2]);
+      doc.text(diff[2], 310, p2Y + 25);
+      p2Y += 44;
+    });
+
+    // Disclaimer
+    p2Y += 8;
+    if (p2Y < H - 120) {
+      doc.setFillColor(249, 246, 238);
+      doc.roundedRect(60, p2Y, 492, 70, 4, 4, 'F');
+      doc.setDrawColor(...BORDER);
+      doc.roundedRect(60, p2Y, 492, 70, 4, 4, 'S');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7.5);
+      doc.setTextColor(...GRAY);
+      doc.setCharSpace(1.5);
+      doc.text('IMPORTANT DISCLAIMER', 72, p2Y + 13);
+      doc.setCharSpace(0);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      const disclaimerText = 'This tool is for informational and educational purposes only and does not constitute insurance, financial, legal, or medical advice. Health share programs are not insurance and do not guarantee payment of medical expenses. ACA cost estimates are based on user-provided data. Health share cost estimates are based on publicly available program averages and may not reflect actual quoted rates. Results vary significantly based on individual circumstances, health status, geographic location, and selected program. Consult a licensed insurance advisor, benefits broker, or financial professional before making any coverage decisions for yourself or your employees.';
+      const disclaimerLines = doc.splitTextToSize(disclaimerText, 472);
+      doc.text(disclaimerLines, 72, p2Y + 24);
+    }
+
+    // CTA
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(...DARK);
+    doc.text('Ready for a personalized analysis?', 306, H - 55, { align: 'center' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...GRAY);
+    doc.text('Contact TMS Solutions Group for a custom review of your workforce and options.', 306, H - 42, { align: 'center' });
+    doc.setTextColor(...GOLD);
+    doc.text('tom@tms-solutions-group.com  ·  tms-solutions-group.com  ·  386-387-8620', 306, H - 28, { align: 'center' });
+
+    // Footer bar
+    doc.setFillColor(...GOLD);
+    doc.rect(0, H - 14, W, 1, 'F');
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(...GRAY);
+    doc.text('TMS Solutions Group — For informational purposes only. Consult a licensed advisor before making coverage decisions.', 306, H - 4, { align: 'center' });
+
+    // Save
+    const bizSlug = d.bizName ? '-' + d.bizName.replace(/[^a-zA-Z0-9]/g, '') : '';
+    doc.save('TMS-Insurance-Comparison' + bizSlug + '.pdf');
+  }
+</script>
+</body>
+</html>
