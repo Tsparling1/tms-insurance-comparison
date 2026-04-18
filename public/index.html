@@ -1113,6 +1113,21 @@
 
     try {
 
+    // Strip all non-ASCII characters that jsPDF helvetica cannot encode.
+    // Replace common punctuation with safe ASCII equivalents.
+    function pdfSafe(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/\u2013/g, '-')   // en dash
+        .replace(/\u2014/g, '-')   // em dash
+        .replace(/\u00B7/g, '|')   // middle dot (used in footer)
+        .replace(/\u2019/g, "'")   // right single quote
+        .replace(/\u2018/g, "'")   // left single quote
+        .replace(/\u201C/g, '"')   // left double quote
+        .replace(/\u201D/g, '"')   // right double quote
+        .replace(/[^\x00-\x7F]/g, ''); // strip any remaining non-ASCII
+    }
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
     const W = 612, H = 792;
@@ -1156,7 +1171,7 @@
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.setTextColor(...GRAY);
-    const subText = (d.bizName ? d.bizName + '  ·  ' : '') + d.employees + ' Employee' + (d.employees !== 1 ? 's' : '') + '  ·  ' + (d.planType === 'family' ? 'Family' : 'Individual') + ' Plans  ·  ' + d.date;
+    const subText = pdfSafe((d.bizName ? d.bizName + '  |  ' : '') + d.employees + ' Employee' + (d.employees !== 1 ? 's' : '') + '  |  ' + (d.planType === 'family' ? 'Family' : 'Individual') + ' Plans  |  ' + d.date);
     doc.text(subText, 306, 148, { align: 'center' });
 
     // Divider
@@ -1177,7 +1192,7 @@
       doc.setTextColor(120, 53, 15);
       doc.text('!! ACA Subsidy Flag:', 72, alertY + 13);
       doc.setFont('helvetica', 'normal');
-      doc.text('Subsidized ACA premiums may be lower than health share costs. Evaluate carefully.', 72, alertY + 26);
+      doc.text(pdfSafe('Subsidized ACA premiums may be lower than health share costs. Evaluate carefully.'), 72, alertY + 26);
       alertY += 48;
     }
     if (d.preExisting === 'yes') {
@@ -1192,8 +1207,8 @@
       doc.text('!! Pre-Existing Condition Warning:', 72, alertY + 13);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(127, 29, 29);
-      doc.text('Health share programs are NOT required to cover pre-existing conditions. Employees', 72, alertY + 26);
-      doc.text('with ongoing medical needs may face denied sharing requests. ACA covers all conditions.', 72, alertY + 39);
+      doc.text(pdfSafe('Health share programs are NOT required to cover pre-existing conditions. Employees'), 72, alertY + 26);
+      doc.text(pdfSafe('with ongoing medical needs may face denied sharing requests. ACA covers all conditions.'), 72, alertY + 39);
       alertY += 56;
     }
 
@@ -1212,22 +1227,22 @@
     doc.setFontSize(9);
     doc.setTextColor(...bannerTextColor);
     doc.setCharSpace(2);
-    doc.text(d.savingsAnnual > 0 ? 'ESTIMATED ANNUAL SAVINGS' : 'ESTIMATED COST DIFFERENCE', 306, alertY + 16, { align: 'center' });
+    doc.text(pdfSafe(d.savingsAnnual > 0 ? 'ESTIMATED ANNUAL SAVINGS' : 'ESTIMATED COST DIFFERENCE'), 306, alertY + 16, { align: 'center' });
     doc.setCharSpace(0);
 
     doc.setFontSize(28);
     const savingsStr = d.savingsAnnual > 0
       ? '$' + Math.round(d.savingsAnnual).toLocaleString()
       : '(' + '$' + Math.round(Math.abs(d.savingsAnnual)).toLocaleString() + ')';
-    doc.text(savingsStr, 306, alertY + 42, { align: 'center' });
+    doc.text(pdfSafe(savingsStr), 306, alertY + 42, { align: 'center' });
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.setTextColor(...GRAY);
     doc.text(
-      d.savingsAnnual > 0
-        ? 'Health share mid-range estimate vs current ACA — ' + Math.round(d.savingsPct) + '% potential savings'
-        : 'Health share mid-range estimate is higher than current ACA at these premium levels',
+      pdfSafe(d.savingsAnnual > 0
+        ? 'Health share mid-range estimate vs current ACA - ' + Math.round(d.savingsPct) + '% potential savings'
+        : 'Health share mid-range estimate is higher than current ACA at these premium levels'),
       306, alertY + 56, { align: 'center' }
     );
 
@@ -1255,7 +1270,7 @@
       doc.setFontSize(7.5);
       doc.setTextColor(...color);
       doc.setCharSpace(1.5);
-      doc.text(label.toUpperCase(), x + 10, rowY + 15);
+      doc.text(pdfSafe(label.toUpperCase()), x + 10, rowY + 15);
       doc.setCharSpace(0);
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9);
@@ -1272,10 +1287,10 @@
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8.5);
         doc.setTextColor(...GRAY);
-        doc.text(row.label, x + 8, nameY + 14);
+        doc.text(pdfSafe(row.label), x + 8, nameY + 14);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(row.color ? row.color : DARK);
-        doc.text(row.value, x + colW - 8, nameY + 14, { align: 'right' });
+        doc.text(pdfSafe(row.value), x + colW - 8, nameY + 14, { align: 'right' });
         nameY += 22;
       });
     }
@@ -1289,10 +1304,10 @@
       { label: 'ACA Compliant', value: 'Yes', color: GREEN_C },
     ];
     const hsRows = [
-      { label: 'Est. Monthly Contrib / Person', value: '$' + d.hsRates.low + '–$' + d.hsRates.high },
+      { label: 'Est. Monthly Contrib / Person', value: '$' + d.hsRates.low + '-$' + d.hsRates.high },
       { label: 'Monthly Total (mid estimate)', value: '$' + Math.round(d.hsMonthlyMid).toLocaleString(), color: d.hsMonthlyMid < d.acaMonthly ? GREEN_C : RED_C },
       { label: 'Annual Total (mid estimate)', value: '$' + Math.round(d.hsAnnualMid).toLocaleString(), color: d.hsAnnualMid < d.acaAnnual ? GREEN_C : RED_C },
-      { label: 'IUA (per incident)', value: '$500–$2,500' },
+      { label: 'IUA (per incident)', value: '$500-$2,500' },
       { label: 'Pre-existing Conditions', value: 'Often Excluded', color: RED_C },
       { label: 'ACA Compliant', value: 'No', color: RED_C },
     ];
@@ -1306,7 +1321,7 @@
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(...GRAY);
-    doc.text('tom@tms-solutions-group.com  ·  tms-solutions-group.com  ·  386-387-8620', 306, H - 12, { align: 'center' });
+    doc.text('tom@tms-solutions-group.com  |  tms-solutions-group.com  |  386-387-8620', 306, H - 12, { align: 'center' });
 
     // ---- PAGE 2: DETAILED BREAKDOWN ----
     doc.addPage();
@@ -1325,14 +1340,14 @@
     p2Y += 18;
 
     const hsScenList = [
-      ['Healthy, Low-Utilization Workforce', 'Teams with generally healthy employees who rarely need care benefit most from health share\'s lower monthly contributions.'],
-      ['High ACA Premiums, No Subsidies', 'When ACA premiums exceed $350–$400+/person with no subsidy support, health share\'s $199–$299/person average can generate meaningful savings.'],
+      ['Healthy, Low-Utilization Workforce', 'Teams with generally healthy employees who rarely need care benefit most from health share lower monthly contributions.'],
+      ['High ACA Premiums, No Subsidies', 'When ACA premiums exceed $350-$400+/person with no subsidy support, health share $199-$299/person average can generate meaningful savings.'],
       ['Employer Supplement Strategy', 'Some employers pair health share with direct primary care (DPC) memberships for routine visits, creating a low-cost alternative for qualified teams.'],
     ];
     const acaScenList = [
-      ['Employees With Pre-Existing Conditions', 'ACA is legally required to cover all pre-existing conditions with no waiting periods. Health share is not — often the decisive factor.'],
-      ['Employees Receiving Premium Subsidies', 'ACA tax credits can reduce effective premiums to near $0/month — far below what any health share program can offer.'],
-      ['High-Utilization or Complex Medical Needs', 'Employees with chronic conditions, frequent specialist visits, or prescription needs benefit from ACA\'s structured out-of-pocket maximums.'],
+      ['Employees With Pre-Existing Conditions', 'ACA is legally required to cover all pre-existing conditions with no waiting periods. Health share is not - often the decisive factor.'],
+      ['Employees Receiving Premium Subsidies', 'ACA tax credits can reduce effective premiums to near $0/month - far below what any health share program can offer.'],
+      ['High-Utilization or Complex Medical Needs', 'Employees with chronic conditions, frequent specialist visits, or prescription needs benefit from ACA structured out-of-pocket maximums.'],
     ];
 
     function drawScenarioCol(x, colW2, color, title, items) {
@@ -1341,7 +1356,7 @@
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
       doc.setTextColor(...color);
-      doc.text(title, x + 10, p2Y + 11);
+      doc.text(pdfSafe(title), x + 10, p2Y + 11);
       let itemY = p2Y + 24;
       items.forEach((item, i) => {
         doc.setFillColor(255, 255, 255);
@@ -1361,12 +1376,12 @@
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(9);
         doc.setTextColor(...DARK);
-        doc.text(item[0], x + 28, itemY + 14);
+        doc.text(pdfSafe(item[0]), x + 28, itemY + 14);
 
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8);
         doc.setTextColor(...GRAY);
-        const lines = doc.splitTextToSize(item[1], colW2 - 34);
+        const lines = doc.splitTextToSize(pdfSafe(item[1]), colW2 - 34);
         doc.text(lines, x + 28, itemY + 26);
 
         itemY += 58;
@@ -1386,8 +1401,8 @@
     p2Y += 14;
 
     const diffs = [
-      ['Deductible Structure', 'ACA: Annual accumulating deductible (' + '$' + Math.round(d.deductible).toLocaleString() + '/yr)', 'HS: Per-incident IUA ($500–$2,500 each incident)'],
-      ['Legal Protection', 'ACA: Federally regulated, guaranteed coverage', 'HS: Not insurance — not required to pay claims by law'],
+      ['Deductible Structure', 'ACA: Annual accumulating deductible ($' + Math.round(d.deductible).toLocaleString() + '/yr)', 'HS: Per-incident IUA ($500-$2,500 each incident)'],
+      ['Legal Protection', 'ACA: Federally regulated, guaranteed coverage', 'HS: Not insurance - not required to pay claims by law'],
       ['Network Access', 'ACA: In/out-of-network tiers with known cost sharing', 'HS: Any provider, but sharing decisions made by the ministry'],
     ];
 
@@ -1401,13 +1416,13 @@
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(8.5);
       doc.setTextColor(...DARK);
-      doc.text(diff[0], 72, p2Y + 13);
+      doc.text(pdfSafe(diff[0]), 72, p2Y + 13);
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(8);
       doc.setTextColor(BLUE_C[0], BLUE_C[1], BLUE_C[2]);
-      doc.text(diff[1], 72, p2Y + 25);
+      doc.text(pdfSafe(diff[1]), 72, p2Y + 25);
       doc.setTextColor(GREEN_C[0], GREEN_C[1], GREEN_C[2]);
-      doc.text(diff[2], 310, p2Y + 25);
+      doc.text(pdfSafe(diff[2]), 310, p2Y + 25);
       p2Y += 44;
     });
 
@@ -1427,7 +1442,7 @@
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(7.5);
       const disclaimerText = 'This tool is for informational and educational purposes only and does not constitute insurance, financial, legal, or medical advice. Health share programs are not insurance and do not guarantee payment of medical expenses. ACA cost estimates are based on user-provided data. Health share cost estimates are based on publicly available program averages and may not reflect actual quoted rates. Results vary significantly based on individual circumstances, health status, geographic location, and selected program. Consult a licensed insurance advisor, benefits broker, or financial professional before making any coverage decisions for yourself or your employees.';
-      const disclaimerLines = doc.splitTextToSize(disclaimerText, 472);
+      const disclaimerLines = doc.splitTextToSize(pdfSafe(disclaimerText), 472);
       doc.text(disclaimerLines, 72, p2Y + 24);
     }
 
@@ -1441,7 +1456,7 @@
     doc.setTextColor(...GRAY);
     doc.text('Contact TMS Solutions Group for a custom review of your workforce and options.', 306, H - 42, { align: 'center' });
     doc.setTextColor(...GOLD);
-    doc.text('tom@tms-solutions-group.com  ·  tms-solutions-group.com  ·  386-387-8620', 306, H - 28, { align: 'center' });
+    doc.text('tom@tms-solutions-group.com  |  tms-solutions-group.com  |  386-387-8620', 306, H - 28, { align: 'center' });
 
     // Footer bar
     doc.setFillColor(...GOLD);
@@ -1449,7 +1464,7 @@
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7);
     doc.setTextColor(...GRAY);
-    doc.text('TMS Solutions Group — For informational purposes only. Consult a licensed advisor before making coverage decisions.', 306, H - 4, { align: 'center' });
+    doc.text('TMS Solutions Group - For informational purposes only. Consult a licensed advisor before making coverage decisions.', 306, H - 4, { align: 'center' });
 
     // Save
     const bizSlug = d.bizName ? '-' + d.bizName.replace(/[^a-zA-Z0-9]/g, '') : '';
