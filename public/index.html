@@ -1111,6 +1111,8 @@
     const d = window._calcData;
     if (!d) return;
 
+    try {
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
     const W = 612, H = 792;
@@ -1173,7 +1175,7 @@
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
       doc.setTextColor(120, 53, 15);
-      doc.text('⚠ ACA Subsidy Flag:', 72, alertY + 13);
+      doc.text('!! ACA Subsidy Flag:', 72, alertY + 13);
       doc.setFont('helvetica', 'normal');
       doc.text('Subsidized ACA premiums may be lower than health share costs. Evaluate carefully.', 72, alertY + 26);
       alertY += 48;
@@ -1187,7 +1189,7 @@
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
       doc.setTextColor(...RED_C);
-      doc.text('⚠ Pre-Existing Condition Warning:', 72, alertY + 13);
+      doc.text('!! Pre-Existing Condition Warning:', 72, alertY + 13);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(127, 29, 29);
       doc.text('Health share programs are NOT required to cover pre-existing conditions. Employees', 72, alertY + 26);
@@ -1372,8 +1374,8 @@
       return itemY;
     }
 
-    const sc1End = drawScenarioCol(60, 230, GREEN_C, '✓ Health Share Advantages', hsScenList);
-    const sc2End = drawScenarioCol(302, 250, BLUE_C, '✓ ACA Advantages', acaScenList);
+    const sc1End = drawScenarioCol(60, 230, GREEN_C, 'Health Share Advantages', hsScenList);
+    const sc2End = drawScenarioCol(302, 250, BLUE_C, 'ACA Advantages', acaScenList);
     p2Y = Math.max(sc1End, sc2End) + 16;
 
     // Key Structural Differences
@@ -1452,6 +1454,11 @@
     // Save
     const bizSlug = d.bizName ? '-' + d.bizName.replace(/[^a-zA-Z0-9]/g, '') : '';
     doc.save('TMS-Insurance-Comparison' + bizSlug + '.pdf');
+
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      alert('PDF generation failed: ' + err.message + '\n\nPlease try again or contact tom@tms-solutions-group.com.');
+    }
   }
 </script>
 </body>
