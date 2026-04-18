@@ -1113,6 +1113,8 @@
 
     try {
 
+    console.log('PDF step 1: try block entered');
+
     // Strip all non-ASCII characters that jsPDF helvetica cannot encode.
     // Replace common punctuation with safe ASCII equivalents.
     function pdfSafe(str) {
@@ -1128,8 +1130,10 @@
         .replace(/[^\x00-\x7F]/g, ''); // strip any remaining non-ASCII
     }
 
+    console.log('PDF step 2: creating jsPDF instance');
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
+    console.log('PDF step 3: jsPDF instance created');
     const W = 612, H = 792;
     const GOLD = [184, 134, 11];
     const DARK = [28, 28, 30];
@@ -1141,6 +1145,7 @@
     const AMBER_C = [180, 83, 9];
     const BORDER  = [232, 229, 220];
 
+    console.log('PDF step 4: drawing page 1 background');
     // ---- PAGE 1: COVER / SUMMARY ----
     doc.setFillColor(...CREAM);
     doc.rect(0, 0, W, H, 'F');
@@ -1212,6 +1217,7 @@
       alertY += 56;
     }
 
+    console.log('PDF step 5: drawing savings banner, alertY=', alertY);
     // Savings Banner
     alertY += 6;
     const bannerColor = d.savingsAnnual > 0 ? [240, 253, 244] : [255, 247, 237];
@@ -1246,6 +1252,7 @@
       306, alertY + 56, { align: 'center' }
     );
 
+    console.log('PDF step 6: drawing comparison table');
     // Side-by-Side Table
     const tableY = alertY + 82;
     doc.setFont('helvetica', 'bold');
@@ -1278,6 +1285,7 @@
       // Name
       let nameY = rowY + 33;
       rows.forEach((row, i) => {
+        console.log('PDF step 6a: row', i, 'label:', row.label, 'value:', row.value, 'color:', row.color);
         const bg = i % 2 === 0 ? [252, 252, 250] : [255, 255, 255];
         doc.setFillColor(...bg);
         doc.rect(x, nameY, colW, 22, 'F');
@@ -1289,7 +1297,7 @@
         doc.setTextColor(...GRAY);
         doc.text(pdfSafe(row.label), x + 8, nameY + 14);
         doc.setFont('helvetica', 'bold');
-        doc.setTextColor(row.color ? row.color : DARK);
+        doc.setTextColor(...(row.color || DARK));
         doc.text(pdfSafe(row.value), x + colW - 8, nameY + 14, { align: 'right' });
         nameY += 22;
       });
@@ -1312,8 +1320,11 @@
       { label: 'ACA Compliant', value: 'No', color: RED_C },
     ];
 
+    console.log('PDF step 7: calling drawCompareCol for ACA');
     drawCompareCol(col1X, 'ACA / Traditional Insurance', BLUE_C, acaRows);
+    console.log('PDF step 8: calling drawCompareCol for HS');
     drawCompareCol(col2X, 'Health Share Program', GREEN_C, hsRows);
+    console.log('PDF step 9: both columns drawn');
 
     // Footer
     doc.setFillColor(...GOLD);
@@ -1323,6 +1334,7 @@
     doc.setTextColor(...GRAY);
     doc.text('tom@tms-solutions-group.com  |  tms-solutions-group.com  |  386-387-8620', 306, H - 12, { align: 'center' });
 
+    console.log('PDF step 10: starting page 2');
     // ---- PAGE 2: DETAILED BREAKDOWN ----
     doc.addPage();
     doc.setFillColor(...CREAM);
@@ -1389,10 +1401,14 @@
       return itemY;
     }
 
+    console.log('PDF step 11: drawing scenario columns');
     const sc1End = drawScenarioCol(60, 230, GREEN_C, 'Health Share Advantages', hsScenList);
+    console.log('PDF step 12: HS scenarios done, drawing ACA scenarios');
     const sc2End = drawScenarioCol(302, 250, BLUE_C, 'ACA Advantages', acaScenList);
+    console.log('PDF step 13: scenario columns done');
     p2Y = Math.max(sc1End, sc2End) + 16;
 
+    console.log('PDF step 14: drawing key differences');
     // Key Structural Differences
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(14);
@@ -1466,9 +1482,11 @@
     doc.setTextColor(...GRAY);
     doc.text('TMS Solutions Group - For informational purposes only. Consult a licensed advisor before making coverage decisions.', 306, H - 4, { align: 'center' });
 
+    console.log('PDF step 15: saving PDF');
     // Save
     const bizSlug = d.bizName ? '-' + d.bizName.replace(/[^a-zA-Z0-9]/g, '') : '';
     doc.save('TMS-Insurance-Comparison' + bizSlug + '.pdf');
+    console.log('PDF step 16: save complete');
 
     } catch (err) {
       console.error('PDF generation error:', err);
